@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/main_bg"
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    >
+    <!--焦点框和recyclerView要用FrameLayout包裹一层,否则会出现一些问题!!!,这是由于计算焦点框位置和获取焦点View的位置所限定的-->
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:clipChildren="false"
+        android:clipToPadding="false">
+        <com.lp.recyclerview4tvlibrary.view.TvRecyclerView
+            android:id="@+id/trv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
+            />
+        <com.lp.recyclerview4tvlibrary.view.FocusFrameView
+            android:id="@+id/frame"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </FrameLayout>
+</RelativeLayout>
