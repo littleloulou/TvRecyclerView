@@ -111,14 +111,17 @@ public class MainActivity extends AppCompatActivity {
         public TvRecyclerView.TvViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new MenuHolder(LayoutInflater.from(MainActivity.this).inflate(R.layout.item_main_example, parent, false));
         }
+
         @Override
         public void onBindViewHolder(TvRecyclerView.TvViewHolder holder, int position) {
             ((TextView) holder.itemView).setText(mDatas[position]);
         }
+
         @Override
         public int getItemCount() {
             return mDatas.length;
         }
+
         @Override
         protected Object getData(int start) {
             return null;

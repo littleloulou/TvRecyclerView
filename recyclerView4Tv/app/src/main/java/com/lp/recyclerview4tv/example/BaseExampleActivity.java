@@ -112,6 +112,7 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(TvRecyclerView.TvViewHolder holder, int position) {
+            changeSize(holder.itemView, position);
             holder.setData(mDatas.get(position));
         }
 
@@ -122,6 +123,7 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(TvRecyclerView.TvViewHolder holder, int position, List<Object> payloads) {
+            changeSize(holder.itemView, position);
             if (payloads != null && payloads.size() > 0) {
                 holder.setData(mDatas.get(position));
             } else {
@@ -132,12 +134,6 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
         @Override
         protected Object getData(int start) {
             return mDatas.get(start);
-        }
-
-        @Override
-        public void onViewAttachedToWindow(TvRecyclerView.TvViewHolder holder) {
-            super.onViewAttachedToWindow(holder);
-            changeSize(holder.itemView, holder.getAdapterPosition());
         }
     }
 

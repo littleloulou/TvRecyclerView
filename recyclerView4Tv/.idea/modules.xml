@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/RecyclerView4Tv.iml" filepath="$PROJECT_DIR$/RecyclerView4Tv.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/recyclerView4Tv.iml" filepath="$PROJECT_DIR$/recyclerView4Tv.iml" />
       <module fileurl="file://$PROJECT_DIR$/recyclerview4tvlibrary/recyclerview4tvlibrary.iml" filepath="$PROJECT_DIR$/recyclerview4tvlibrary/recyclerview4tvlibrary.iml" />
     </modules>
   </component>

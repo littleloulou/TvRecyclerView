@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.lp.recyclerview4tv.R;
 import com.lp.recyclerview4tvlibrary.utils.ViewUtils;
@@ -20,7 +21,11 @@ public class StaggeredGridActivity extends BaseExampleActivity {
         if ("0".equals(mIsVertical)) {
             return new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.HORIZONTAL);
         } else {
-            return new StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL);
+            ViewGroup.LayoutParams layoutParams =
+                    mTvRecyclerView.getLayoutParams();
+            layoutParams.width = ViewUtils.dpToPx(this, 886f);
+            mTvRecyclerView.setLayoutParams(layoutParams);
+            return new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
         }
     }
 
@@ -53,10 +58,10 @@ public class StaggeredGridActivity extends BaseExampleActivity {
             }
         } else {
             if (position == 0) {
-                lp.width = ViewUtils.dpToPx(this, 700);
-                lp.height = ViewUtils.dpToPx(this, 200);
+                lp.width = StaggeredGridLayoutManager.LayoutParams.MATCH_PARENT;
+                lp.height = ViewUtils.dpToPx(this, 266);
                 lp.setFullSpan(true);
-            } else if (position == 4) {
+            } else if (position == 4 || position == 5 || position == 10) {
                 lp.width = ViewUtils.dpToPx(this, 200);
                 lp.height = ViewUtils.dpToPx(this, 420);
                 lp.setFullSpan(false);
@@ -66,7 +71,6 @@ public class StaggeredGridActivity extends BaseExampleActivity {
                 lp.setFullSpan(false);
             }
         }
-
         itemView.setLayoutParams(lp);
     }
 }
