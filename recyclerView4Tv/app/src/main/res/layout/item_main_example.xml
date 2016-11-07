@@ -7,7 +7,7 @@
     android:gravity="center"
     android:textColor="#fff"
     android:background="#cccccccc"
-    android:textSize="24sp"
+    android:textSize="22sp"
     android:padding="10dp"
     android:clickable="true"
     android:focusable="true"
