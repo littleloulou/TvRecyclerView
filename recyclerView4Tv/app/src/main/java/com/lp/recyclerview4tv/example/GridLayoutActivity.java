@@ -4,6 +4,8 @@ import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
+import com.lp.recyclerview4tvlibrary.utils.ViewUtils;
+
 public class GridLayoutActivity extends BaseExampleActivity {
 
     @Override
@@ -22,6 +24,6 @@ public class GridLayoutActivity extends BaseExampleActivity {
 
     @Override
     protected int getFramePadding() {
-        return 0;
+        return ViewUtils.dpToPx(this,-3);
     }
 }

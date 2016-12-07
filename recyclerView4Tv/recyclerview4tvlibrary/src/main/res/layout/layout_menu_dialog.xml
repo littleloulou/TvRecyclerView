@@ -10,42 +10,58 @@
     android:clickable="true"
     android:focusable="true"
     android:focusableInTouchMode="true"
+    android:scrollbars="none"
     android:descendantFocusability="afterDescendants"
    >
-    <Button
-        android:id="@+id/btn_add"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/menu_btn_bg"
-        android:textSize="18sp"
-        android:layout_margin="3dp"
-        android:text="add"
-        />
-    <Button
-        android:id="@+id/btn_del"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/menu_btn_bg"
-        android:layout_margin="3dp"
-        android:textSize="18sp"
-        android:text="delete"
-        />
-    <Button
-        android:id="@+id/btn_update"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/menu_btn_bg"
-        android:layout_margin="3dp"
-        android:textSize="18sp"
-        android:text="update"
-        />
-    <Button
-        android:id="@+id/btn_update_some"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/menu_btn_bg"
-        android:layout_margin="3dp"
-        android:textSize="18sp"
-        android:text="update_some"
-        />
+        android:orientation="vertical"
+        >
+        <Button
+            android:id="@+id/btn_add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/menu_btn_bg"
+            android:textSize="18sp"
+            android:layout_margin="3dp"
+            android:text="add"
+            />
+        <Button
+            android:id="@+id/btn_del"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/menu_btn_bg"
+            android:layout_margin="3dp"
+            android:textSize="18sp"
+            android:text="delete"
+            />
+        <Button
+            android:id="@+id/btn_update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/menu_btn_bg"
+            android:layout_margin="3dp"
+            android:textSize="18sp"
+            android:text="update"
+            />
+        <Button
+            android:id="@+id/btn_update_some"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/menu_btn_bg"
+            android:layout_margin="3dp"
+            android:textSize="18sp"
+            android:text="update_some"
+            />
+        <Button
+            android:id="@+id/btn_move"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/menu_btn_bg"
+            android:layout_margin="3dp"
+            android:textSize="18sp"
+            android:text="move_item"
+            />
+    </LinearLayout>
 </com.lp.recyclerview4tvlibrary.view.MenuDialogView>

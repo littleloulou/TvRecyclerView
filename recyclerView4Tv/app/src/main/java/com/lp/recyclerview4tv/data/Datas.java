@@ -1,6 +1,8 @@
 package com.lp.recyclerview4tv.data;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -8,6 +10,9 @@ import java.util.List;
  * 模拟数据，如果想扩展可以使用RxJava 和 Retrofit 从网络获取资源
  */
 public class Datas {
+    private static List<String> dataLists = new ArrayList<>();
+
+    //这样写会item条目越来越多，这种效果
     public static List<String> getDatas() {
         String[] datas = {
                 "http://img4.imgtn.bdimg.com/it/u=2263564587,3827516789&fm=11&gp=0.jpg",
@@ -26,6 +31,18 @@ public class Datas {
                 "http://d.hiphotos.baidu.com/image/h%3D360/sign=856d60650933874483c5297a610fd937/55e736d12f2eb938e81944c7d0628535e5dd6f8a.jpg",
                 "http://d.ifengimg.com/w166_h120/p0.ifengimg.com/ifengiclient/ipic/2016052821/swoole_location_0b913b85734fa084386466b74facd719_size96_w533_h768.jpg"
         };
-        return Arrays.asList(datas);
+        if (dataLists.size() > 0) {
+            return dataLists;
+        }
+        dataLists.addAll(Arrays.asList(datas));
+//        下面这样写会抛出异常的,原因是因为Arrays.asList返回的ArrayList 并不是java.utils包下的ArrayList,而是java.utils.arrays.ArrayList
+        //他们都实现了List接口
+        //改ArrayList 不支持add 和 addAll操作,想想也毕竟是通过数组转换而来的,而数组的长度是不可以动态增加的
+//        List<String> list1 = Arrays.asList(datas);
+//        List<String> list2 = Arrays.asList(datas2);
+//        list2.addAll(list1);
+        return dataLists;
     }
+
+
 }

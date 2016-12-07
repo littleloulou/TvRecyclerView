@@ -19,6 +19,7 @@ import com.lp.recyclerview4tvlibrary.utils.ViewUtils;
 
 /**
  * Created by lph on 2016/10/20.
+ * instanceOf RecyclerView for Tv
  */
 public class TvRecyclerView extends RecyclerView {
 
@@ -35,6 +36,7 @@ public class TvRecyclerView extends RecyclerView {
     private int mSaveFocusPosition = -1;
     private FocusFrameView mFocusFrameView;
     private RecyclerViewEffect mRecyclerViewEffect;
+
 
     public TvRecyclerView(Context context) {
         this(context, null);
@@ -102,10 +104,12 @@ public class TvRecyclerView extends RecyclerView {
 
     }
 
+    //选中状态下方法之后的item不会被后面的条目遮挡,更改绘制顺序
     int position = 0;
 
     @Override
     protected int getChildDrawingOrder(int childCount, int i) {
+        //获取当前选中的View
         View view = getFocusedChild();
         if (null != view) {
             position = getChildAdapterPosition(view) - getFirstVisiblePosition();
@@ -230,34 +234,73 @@ public class TvRecyclerView extends RecyclerView {
         /**
          * 重写这个方法，可以控制焦点框距离父容器的距离,以及由于recyclerView的滚动，产生的偏移量，导致焦点框错位，这里可以记录滑动偏移量。
          */
-
+        System.out.println("child:=========>" + child);
+        System.out.println("rect:==========>" + rect);
+        //计算出当前viewGroup即是RecyclerView的内容区域
         final int parentLeft = getPaddingLeft();
         final int parentTop = getPaddingTop();
         final int parentRight = getWidth() - getPaddingRight();
         final int parentBottom = getHeight() - getPaddingBottom();
+        System.out.println("********************************");
+        System.out.println("parentLeft:======>" + parentLeft);
+        System.out.println("parentTop:======>" + parentTop);
+        System.out.println("parentRight:======>" + parentRight);
+        System.out.println("parentBottom:======>" + parentBottom);
 
-
+        //计算出child,此时是获取焦点的view请求的区域
         final int childLeft = child.getLeft() + rect.left;
         final int childTop = child.getTop() + rect.top;
         final int childRight = childLeft + rect.width();
         final int childBottom = childTop + rect.height();
-
-
+        System.out.println("********************************");
+        System.out.println("childGetLeft:======>" + child.getLeft());
+        System.out.println("childGetTop:======>" + child.getTop());
+        System.out.println("********************************");
+        System.out.println("childLeft:======>" + childLeft);
+        System.out.println("childTop:======>" + childTop);
+        System.out.println("childRight:======>" + childRight);
+        System.out.println("childBottom:======>" + childBottom);
+        System.out.println("********************************");
+        //获取请求区域四个方向与RecyclerView内容四个方向的距离
+        //当请求的新位置在child的左边时,这个时候计算新位置距离RecyclerView内容的左边界的距离,取0和这个值最小的那一个,当这个值为正,说明请求位置处于为可见状态，没有超出屏幕的左边界,反之则超出了边界;
+        //当请求的新位置在child的上面时,这个时候计算新位置距离RecyclerView的内容上边界的距离,取0和这个值最小的一个当这个值为正,说明请求位置处于为可见状态，没有超出屏幕的上边界,反之则超出了边界;
+        //当请求的新位置在child的右边时,这个时候计算新位置距离RecyclerView的内容右边界的距离,取0和这个值最大的一个,当这个值为负时,说明请求位置处于屏幕可见状态,没有超出屏幕右边界,反之则超出了屏幕右边界;
+        //当请求的新位置在child的下面时,这个时候计算新位置距离RecyclerView的内容下边界的距离,取0和这个值最大的一个,当这个值为负时,说明请求位置处于屏幕可见状态,没有超出屏幕下边界,反之则超出了屏幕下边界.
         final int offScreenLeft = Math.min(0, childLeft - parentLeft);
         final int offScreenTop = Math.min(0, childTop - parentTop);
         final int offScreenRight = Math.max(0, childRight - parentRight);
         final int offScreenBottom = Math.max(0, childBottom - parentBottom);
 
+        System.out.println("offScreenLeft:======>" + offScreenLeft);
+        System.out.println("offScreenTop:======>" + offScreenTop);
+        System.out.println("offScreenRight:======>" + offScreenRight);
+        System.out.println("offScreenBottom:======>" + offScreenBottom);
+        //判断是否可以在水平方向滑动,这个是由LayoutManager实现类决定的,只要在LayoutManager的实现类设置为水平方向滑动，这方法返回值恒为true
         final boolean canScrollHorizontal = getLayoutManager().canScrollHorizontally();
         // Favor the "start" layout direction over the end when bringing one side or the other
         // of a large rect into view. If we decide to bring in end because start is already
         // visible, limit the scroll such that start won't go out of bounds.
+        //如果是LayoutManager是水平方向滑动
         int dx;
         if (canScrollHorizontal) {
+            //判断当前布局是否是从右往左(这是android4.2开始新增的一种布局方式),一般情况下都是从左往右的布局,所以if里面的情况基本不会发生
             if (ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL) {
                 dx = offScreenRight != 0 ? offScreenRight
                         : Math.max(offScreenLeft, childRight - parentRight);
             } else {
+                //分为两种情况:
+//                offScreenLeft==0:
+                //当请求的新的位置没有超出recyclerView内容的左边界时
+                //那么就去看offScreenRight的值 和 childLeft - parentLeft 的值比较了,这个时候很显然childLeft - parentLeft的值是大于等于0的
+                //否则不可能会走到这一步,因为上面的计算步骤offScreenLef=Math.min(0, childLeft - parentLeft),而offScreenLef的值又等于0,所以
+                //才会执行到Math.min(childLeft - parentLeft, offScreenRight)这一步,会取较小的一个,为什么呢？
+                //这里假设一下:当前焦点移动方向是向左移动的,其实recyclerView中的内容是向右移动的,childLeft - parentLeft的值显然大于0(这是我们的大前提),而此时offScreenRight值,经过计算是为0的,所以最终dx为0,不会发生滑动
+                //另外一种情况:当焦点是向右移动的时候,其实recyclerView中的内容是向左移动的,childLeft - parentLeft的值显然大于0(这是我们的大前提),而此时offScreenRight的值,就不确定了,
+                //当请求的新位置位于RecyclerView的右边界之外时,offScreenRight的值就不在是0了,而这个值一般是小于相对左边的值,所以就会发生向右滑动,针对一些极端的情况,比如item比RecyclerView还要大
+
+                //总结一下:当offScreenLeft的值为0的时候,是否发生滑动就依赖于offScreenRight的值了,offScreenRight就是由前面计算得到的
+//                offScreenLeft!=0:
+                //当前求的新的位置超出了recyclerView的内容左边界,这种情况dx的值直接就是offScreenLeft的值了
                 dx = offScreenLeft != 0 ? offScreenLeft
                         : Math.min(childLeft - parentLeft, offScreenRight);
             }
@@ -266,22 +309,24 @@ public class TvRecyclerView extends RecyclerView {
         }
         // Favor bringing the top into view over the bottom. If top is already visible and
         // we should scroll to make bottom visible, make sure top does not go out of bounds.
+        //同理,不再分析,只是少了判断布局方式,也没有必要判断布局方式
         int dy = offScreenTop != 0 ? offScreenTop
                 : Math.min(childTop - parentTop, offScreenBottom);
         mOffset = isVertical() ? dy : dx;
+        //在这里可以微调滑动的距离,根据项目的需要
         if (dx != 0 || dy != 0) {
             if (dx > 0) {
-                dx = dx + getRightEdge();
+                dx = dx + mRightEdge;
             } else {
-                dx = dx - getLeftEdge();
+                dx = dx - mLeftEdge;
             }
-
             if (dy > 0) {
-                dy = dy + getUpEdge();
+                dy = dy + mUpEdge;
             } else {
-                dy = dy - getDownEdge();
+                dy = dy - mDownEdge;
             }
             mOffset = isVertical() ? dy : dx;
+            //最后执行滑动
             if (immediate) {
                 scrollBy(dx, dy);
             } else {
@@ -461,6 +506,7 @@ public class TvRecyclerView extends RecyclerView {
 
         /**
          * 用来获取需要更新的数据
+         *
          * @param start 当前更新的位置
          * @return 当前更新的数据
          */
@@ -508,4 +554,7 @@ public class TvRecyclerView extends RecyclerView {
         mFocusFrameView.setFocusFramePadding(framePadding);
     }
 
+    public void setItemScale(float scale) {
+        this.mScale = scale;
+    }
 }

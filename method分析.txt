@@ -1,0 +1,22 @@
+
+//当前选中的第一个条目时候
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: child:=========>android.support.v7.widget.AppCompatTextView{41e4b9d0 VFED..CL .F....I. 20,20-520,100 #7f0b0058 app:id/tv_example}
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: rect:==========>Rect(0, 0 - 500, 80)
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: ********************************
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: parentLeft:======>10
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: parentTop:======>10
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: parentRight:======>530
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: parentBottom:======>610
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: ********************************
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: childLeft:======>20
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: childTop:======>20
+11-18 10:15:37.236 8451-8451/com.lp.recyclerview4tv I/System.out: childRight:======>520
+11-18 10:15:37.246 8451-8451/com.lp.recyclerview4tv I/System.out: childBottom:======>100
+11-18 10:15:37.246 8451-8451/com.lp.recyclerview4tv I/System.out: ********************************
+11-18 10:15:37.246 8451-8451/com.lp.recyclerview4tv I/System.out: offScreenLeft:======>0
+11-18 10:15:37.246 8451-8451/com.lp.recyclerview4tv I/System.out: offScreenTop:======>0
+11-18 10:15:37.246 8451-8451/com.lp.recyclerview4tv I/System.out: offScreenRight:======>0
+11-18 10:15:37.246 8451-8451/com.lp.recyclerview4tv I/System.out: offScreenBottom:======>0
+...
+   ...
+      ...

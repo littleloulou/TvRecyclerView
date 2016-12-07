@@ -1,24 +1,23 @@
 package com.lp.recyclerview4tvlibrary.view;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
-import com.lp.recyclerview4tvlibrary.R;
 import com.lp.recyclerview4tvlibrary.utils.ViewUtils;
 
 /**
  * Created by lph on 2016/11/1.
- *
  */
-public class MenuDialogView extends LinearLayout implements View.OnClickListener {
+public class MenuDialogView extends ScrollView implements View.OnClickListener {
 
-    private WindowManager wm;
+    private WindowManager mWm;
+    private WindowManager.LayoutParams mWmParams;
 
     public MenuDialogView(Context context) {
         super(context);
@@ -35,22 +34,25 @@ public class MenuDialogView extends LinearLayout implements View.OnClickListener
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        for (int i = 0; i < getChildCount(); i++) {
-            getChildAt(i).setOnClickListener(this);
+        if (getChildAt(0) instanceof ViewGroup) {
+            ViewGroup vp = (ViewGroup) getChildAt(0);
+            for (int i = 0; i < vp.getChildCount(); i++) {
+                vp.getChildAt(i).setOnClickListener(this);
+            }
         }
     }
 
     private void createView(int locationX, int locationY) {
-        wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
-        WindowManager.LayoutParams wmParams = new WindowManager.LayoutParams();
-        wmParams.type = WindowManager.LayoutParams.TYPE_PHONE;
-        wmParams.gravity = Gravity.LEFT | Gravity.TOP;
-        wmParams.x = locationX;
-        wmParams.y = locationY;
-        wmParams.width = ViewUtils.dpToPx(getContext(),220);
-        wmParams.height = ViewUtils.dpToPx(getContext(),220);
-        wmParams.format = 1;
-        wm.addView(this, wmParams);
+        mWm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        mWmParams = new WindowManager.LayoutParams();
+        mWmParams.type = WindowManager.LayoutParams.TYPE_PHONE;
+        mWmParams.gravity = Gravity.LEFT | Gravity.TOP;
+        mWmParams.x = locationX;
+        mWmParams.y = locationY;
+        mWmParams.width = ViewUtils.dpToPx(getContext(), 220);
+        mWmParams.height = ViewUtils.dpToPx(getContext(), 220);
+        mWmParams.format = 1;
+        mWm.addView(this, mWmParams);
     }
 
     public void ShowDialog(int locationX, int locationY) {
@@ -58,9 +60,9 @@ public class MenuDialogView extends LinearLayout implements View.OnClickListener
     }
 
     public void dismissDialog() {
-        if (wm != null) {
-            wm.removeView(this);
-            wm = null;
+        if (mWm != null) {
+            mWm.removeView(this);
+            mWm = null;
         }
     }
 
@@ -68,12 +70,19 @@ public class MenuDialogView extends LinearLayout implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
-        mOnMenuItemClickListener.onMenuItemClick(v);
-        dismissDialog();
+        if (mOnMenuItemClickListener.onMenuItemClick(v)) {
+            dismissDialog();
+        }
     }
 
     public interface OnMenuItemClickListener {
-        void onMenuItemClick(View view);
+        /**
+         * 点击菜单回调
+         *
+         * @param view 当前点击的菜单item
+         * @return 是否关闭菜单
+         */
+        boolean onMenuItemClick(View view);
     }
 
     public void setOnMenuItemClickListener(OnMenuItemClickListener mOnMenuItemClickListener) {
@@ -89,5 +98,15 @@ public class MenuDialogView extends LinearLayout implements View.OnClickListener
             return true;
         }
         return super.dispatchKeyEvent(event);
+    }
+
+    public void updateLayout() {
+        if (mWm != null && mWmParams != null) {
+            mWmParams.x -= 220;
+            if (mWmParams.x < 0) {
+                mWmParams.x = 80;
+            }
+            mWm.updateViewLayout(this, mWmParams);
+        }
     }
 }

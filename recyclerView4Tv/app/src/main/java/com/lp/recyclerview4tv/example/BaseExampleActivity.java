@@ -19,6 +19,7 @@ import com.lp.recyclerview4tvlibrary.view.MenuDialogView;
 import com.lp.recyclerview4tvlibrary.view.TvRecyclerView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,6 +51,7 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
         mTvRecyclerView.initFrame(mFocusFrame, R.drawable.select_border, getFramePadding());
         mTvRecyclerView.setOnItemListener(getItemListener());
         mTvRecyclerView.setLayoutManager(getLayoutManager());
+        mTvRecyclerView.setItemScale(1.1f);
         mAdapter = new DefaultAdapter();
         mTvRecyclerView.setAdapter(mAdapter);
     }
@@ -91,12 +93,16 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
 
 
     protected void initData() {
-        for (int i = 0; i < 20; i++) {
+       /* for (int i = 0; i < 20; i++) {
             if (i < Datas.getDatas().size()) {
                 mDatas.add(Datas.getDatas().get(i));
             } else {
                 mDatas.add(i + "");
             }
+        }*/
+        mDatas.clear();
+        for (String data : Datas.getDatas()) {
+            mDatas.add(data);
         }
     }
 
@@ -166,7 +172,7 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
             mMenuDialog = ((MenuDialogView) LayoutInflater.from(this).inflate(R.layout.layout_menu_dialog, null));
             mMenuDialog.setOnMenuItemClickListener(new MenuDialogView.OnMenuItemClickListener() {
                 @Override
-                public void onMenuItemClick(View view) {
+                public boolean onMenuItemClick(View view) {
                     switch (view.getId()) {
                         case R.id.btn_add:
                             mDatas.add(mCurrentFocus + 1, "https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1478153124&di=16d621c728b7dc54cb6aefc57fe700b4&src=http://pic15.nipic.com/20110716/7558254_103836442000_2.jpg");
@@ -188,8 +194,17 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
                             }
                             mAdapter.notifyItemRangeChangedWrapper(mCurrentFocus, index, 1);
                             break;
+                        case R.id.btn_move:
+                            if (mCurrentFocus < 2) {
+                                return false;
+                            }
+                            Collections.swap(mDatas, mCurrentFocus, mCurrentFocus - 2);
+                            mAdapter.notifyItemMoved(mCurrentFocus, mCurrentFocus - 2);
+                            mAdapter.notifyDataSetChanged();
+                            mMenuDialog.updateLayout();
+                            break;
                     }
-
+                    return view.getId() != R.id.btn_move;
                 }
             });
         }
