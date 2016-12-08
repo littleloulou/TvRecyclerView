@@ -476,7 +476,7 @@ public class TvRecyclerView extends RecyclerView {
          * @param payLoad 是否全部更新
          */
         public void notifyItemRangeChangedWrapper(int start, int count, Object payLoad) {
-            if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager) {
+            if (mRecyclerView.getLayoutManager() instanceof StaggeredGridLayoutManager || mRecyclerView.getLayoutManager() instanceof GridLayoutManager) {
                 for (int i = start; i < start + count; i++) {
                     ViewHolder holder = mRecyclerView.findViewHolderForAdapterPosition(i);
                     if (holder != null) {

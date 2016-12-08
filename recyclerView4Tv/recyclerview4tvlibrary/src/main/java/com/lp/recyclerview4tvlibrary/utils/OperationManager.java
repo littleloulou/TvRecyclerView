@@ -204,8 +204,8 @@ public class OperationManager {
 
     private void notifyMove(int moveDir, int currentFocus, int newFocus) {
         Collections.swap(mData, currentFocus, newFocus);
-        mAdapter.notifyItemChangedWrapper(currentFocus, "playLoad");
-        mAdapter.notifyItemChangedWrapper(newFocus, "playLoad");
+        mAdapter.notifyItemChanged(currentFocus, "playLoad");
+        mAdapter.notifyItemChanged(newFocus, "playLoad");
         int offset = calcMoveOffset(moveDir, currentFocus, newFocus);
         updateOperateViewLocation(moveDir, offset);
     }
