@@ -1,5 +1,6 @@
 package com.lp.recyclerview4tv.example;
 
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -14,8 +15,11 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.lp.recyclerview4tv.R;
 import com.lp.recyclerview4tv.data.Datas;
+import com.lp.recyclerview4tvlibrary.utils.OperationManager;
+import com.lp.recyclerview4tvlibrary.utils.ViewUtils;
 import com.lp.recyclerview4tvlibrary.view.FocusFrameView;
 import com.lp.recyclerview4tvlibrary.view.MenuDialogView;
+import com.lp.recyclerview4tvlibrary.view.OperateView;
 import com.lp.recyclerview4tvlibrary.view.TvRecyclerView;
 
 import java.util.ArrayList;
@@ -24,7 +28,6 @@ import java.util.List;
 
 /**
  * Created by lph on 2016/11/3.
- *
  */
 public abstract class BaseExampleActivity extends AppCompatActivity {
 
@@ -35,6 +38,10 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
     protected String mIsVertical;
     private MenuDialogView mMenuDialog;
     private int mCurrentFocus;
+    private OperationManager.OperateParameter mParameter;
+    private OperationManager mManager;
+    private List<String> mOperateData;
+    private View mCrurrentItemView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -67,6 +74,7 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
 
             @Override
             public boolean onItemSelected(TvRecyclerView parent, View itemView, int position) {
+                mCrurrentItemView = itemView;
                 mCurrentFocus = position;
                 return false;
             }
@@ -161,7 +169,8 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
-            showMenu();
+//            showMenu();
+            showMenuByManager();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -211,6 +220,57 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
         int[] location = new int[2];
         mFocusFrame.getLocationInWindow(location);
         mMenuDialog.ShowDialog(location[0], location[1]);
+    }
+
+    public void showMenuByManager() {
+        mManager = OperationManager.newInstance(this);
+        mManager.attachViewAndData(mTvRecyclerView, mAdapter, mDatas);
+        OperateView ov = mManager.createOperateView(R.layout.layout_operateview);
+        mParameter = new OperationManager.OperateParameter();
+        mOperateData = new ArrayList<>();
+        ov.setOnOperatingListener(new OperateView.OnOperatingListener() {
+            @Override
+            public void onItemAdd(Object data) {
+                mOperateData.clear();
+                mOperateData.add("https://ss0.bdstatic.com/94oJfD_bAAcT8t7mm9GUKT-xh_/timg?image&quality=100&size=b4000_4000&sec=1478153124&di=16d621c728b7dc54cb6aefc57fe700b4&src=http://pic15.nipic.com/20110716/7558254_103836442000_2.jpg");
+                mParameter.setOperateCount(1);
+                mParameter.setOperateData(mOperateData);
+                mParameter.setCurrentOperatePosition(mCurrentFocus);
+                mParameter.setOperateType(OperationManager.OPERATION_TYPE_ADD);
+                mManager.operateItem(mParameter);
+            }
+
+            @Override
+            public void onItemDelete(Object data) {
+                mOperateData.clear();
+                mParameter.setCurrentOperatePosition(mCurrentFocus);
+                mParameter.setOperateCount(1);
+                mParameter.setOperateType(OperationManager.OPERATION_TYPE_DEL);
+                mManager.operateItem(mParameter);
+            }
+
+            @Override
+            public void onItemUpdate(Object data) {
+                mOperateData.clear();
+                mOperateData.add("http://img5.imgtn.bdimg.com/it/u=2551799743,2144415698&fm=21&gp=0.jpg");
+                mParameter.setOperateCount(1);
+                mParameter.setOperateType(OperationManager.OPERATION_TYPE_UPDATE);
+                mParameter.setOperateData(mOperateData);
+                mParameter.setCurrentOperatePosition(mCurrentFocus);
+                mManager.operateItem(mParameter);
+            }
+
+            @Override
+            public void onItemMove() {
+                mParameter.setOperateType(OperationManager.OPERATION_TYPE_MOVE);
+                mParameter.setCurrentOperatePosition(mCurrentFocus);
+                mParameter.setMoveDirection(KeyEvent.KEYCODE_DPAD_LEFT);
+                mManager.operateItem(mParameter);
+            }
+        });
+        Rect onScreenLocation = ViewUtils.getViewOnScreenLocation(mCrurrentItemView);
+        //当x==y==0时,操作框显示在屏幕中央
+        mManager.showOperateViewAt(onScreenLocation.left, onScreenLocation.top);
     }
 
     class DefaultViewHolder extends TvRecyclerView.TvViewHolder {
