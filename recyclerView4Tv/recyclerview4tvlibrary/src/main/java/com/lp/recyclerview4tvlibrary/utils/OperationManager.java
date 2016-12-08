@@ -45,6 +45,7 @@ public class OperationManager {
     private boolean mHadShow;
     private WindowManager mWm;
     private WindowManager.LayoutParams mWmParams;
+    private RecyclerView.LayoutManager mLayoutManager;
 
 
     private OperationManager(Context context) {
@@ -67,6 +68,7 @@ public class OperationManager {
 
     public void attachViewAndData(TvRecyclerView containerView, TvRecyclerView.TvAdapter adapter, List data) {
         mRecyclerView = containerView;
+        mLayoutManager = mRecyclerView.getLayoutManager();
         mAdapter = adapter;
         mData = data;
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -79,7 +81,7 @@ public class OperationManager {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 System.out.println("onScrolled:");
-                View focus = mRecyclerView.findFocus();
+                View focus = mLayoutManager.getFocusedChild();
                 if (focus != null && mWm != null && mWmParams != null) {
                     Rect location = ViewUtils.getViewOnScreenLocation(focus);
                     mWmParams.x = location.left;
@@ -190,49 +192,50 @@ public class OperationManager {
         int moveNum = calcMoveNum(moveDir);
         if (mData == null || mData.size() < moveNum || currentFocus + moveNum >= mData.size())
             return;
-        notifyMove(currentFocus, currentFocus + moveNum);
-        RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-        View current = layoutManager.findViewByPosition(currentFocus);
-        View newView = layoutManager.findViewByPosition(currentFocus - moveNum);
-        if (current != null && newView != null) {
-            int offset = (int) (newView.getX() - current.getX());
-            updateMenuLocation(moveDir, offset);
-        }
+        notifyMove(moveDir, currentFocus, currentFocus + moveNum);
     }
+
 
     private void moveToLeftOrUp(int moveDir, int currentFocus) {
         int moveNum = calcMoveNum(moveDir);
         if (mData == null || mData.size() < moveNum || currentFocus - moveNum < 0) return;
-        notifyMove(currentFocus, currentFocus - moveNum);
-
-        RecyclerView.LayoutManager layoutManager = mRecyclerView.getLayoutManager();
-        View current = layoutManager.findViewByPosition(currentFocus);
-        View newView = layoutManager.findViewByPosition(currentFocus - moveNum);
-        if (current != null && newView != null) {
-            int offset = (int) (newView.getX() - current.getX());
-            updateMenuLocation(moveDir, offset);
-        }
-
+        notifyMove(moveDir, currentFocus, currentFocus - moveNum);
     }
 
-    private void updateMenuLocation(int dir, int offset) {
-        switch (dir) {
+    private void notifyMove(int moveDir, int currentFocus, int newFocus) {
+        Collections.swap(mData, currentFocus, newFocus);
+        mAdapter.notifyItemChangedWrapper(currentFocus, "playLoad");
+        mAdapter.notifyItemChangedWrapper(newFocus, "playLoad");
+        int offset = calcMoveOffset(moveDir, currentFocus, newFocus);
+        updateOperateViewLocation(moveDir, offset);
+    }
+
+    private void updateOperateViewLocation(int moveDir, int offset) {
+        switch (moveDir) {
             case KeyEvent.KEYCODE_DPAD_LEFT:
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 mWmParams.x += offset;
                 break;
-            case KeyEvent.KEYCODE_DPAD_DOWN:
             case KeyEvent.KEYCODE_DPAD_UP:
+            case KeyEvent.KEYCODE_DPAD_DOWN:
                 mWmParams.y += offset;
                 break;
         }
         mWm.updateViewLayout(mOperateView, mWmParams);
     }
 
-    private void notifyMove(int currentFocus, int newFocus) {
-        Collections.swap(mData, currentFocus, newFocus);
-        mAdapter.notifyItemChangedWrapper(currentFocus, "playLoad");
-        mAdapter.notifyItemChangedWrapper(newFocus, "playLoad");
+    private int calcMoveOffset(int moveDir, int currentFocus, int newFocus) {
+        View newView = mLayoutManager.findViewByPosition(newFocus);
+        View currView = mLayoutManager.findViewByPosition(currentFocus);
+        int offset = 0;
+        if (newView != null && currView != null) {
+            if (moveDir == KeyEvent.KEYCODE_DPAD_LEFT || moveDir == KeyEvent.KEYCODE_DPAD_RIGHT) {
+                offset = (int) (newView.getX() - currView.getX());
+            } else {
+                offset = (int) (newView.getY() - currView.getY());
+            }
+        }
+        return offset;
     }
 
     public int calcMoveNum(int moveDirection) {

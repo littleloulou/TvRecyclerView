@@ -166,12 +166,17 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
     }
 
 
+    private int mCurrentDir = KeyEvent.KEYCODE_DPAD_LEFT;
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_MENU) {
 //            showMenu();
             showMenuByManager();
             return true;
+        }
+        if (keyCode == KeyEvent.KEYCODE_DPAD_LEFT || keyCode == KeyEvent.KEYCODE_DPAD_RIGHT || keyCode == KeyEvent.KEYCODE_DPAD_UP || keyCode == KeyEvent.KEYCODE_DPAD_DOWN) {
+            mCurrentDir = keyCode;
         }
         return super.onKeyDown(keyCode, event);
     }
@@ -297,4 +302,5 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
         super.onResume();
         Toast.makeText(this, "按菜单键对item进行操作", Toast.LENGTH_LONG).show();
     }
+
 }
