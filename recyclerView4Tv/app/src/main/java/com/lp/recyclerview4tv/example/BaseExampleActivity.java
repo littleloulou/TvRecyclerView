@@ -269,7 +269,7 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
             public void onItemMove() {
                 mParameter.setOperateType(OperationManager.OPERATION_TYPE_MOVE);
                 mParameter.setCurrentOperatePosition(mCurrentFocus);
-                mParameter.setMoveDirection(KeyEvent.KEYCODE_DPAD_LEFT);
+                mParameter.setMoveDirection(KeyEvent.KEYCODE_DPAD_UP);
                 mManager.operateItem(mParameter);
             }
         });

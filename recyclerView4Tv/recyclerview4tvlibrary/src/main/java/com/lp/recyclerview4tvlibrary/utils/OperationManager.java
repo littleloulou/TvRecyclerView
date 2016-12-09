@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 
 import com.lp.recyclerview4tvlibrary.view.OperateView;
@@ -71,19 +72,12 @@ public class OperationManager {
         mLayoutManager = mRecyclerView.getLayoutManager();
         mAdapter = adapter;
         mData = data;
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+        mRecyclerView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-            }
-
-            @Override
-            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                super.onScrolled(recyclerView, dx, dy);
-                System.out.println("onScrolled:");
-                View focus = mLayoutManager.getFocusedChild();
-                if (focus != null && mWm != null && mWmParams != null) {
-                    Rect location = ViewUtils.getViewOnScreenLocation(focus);
+            public void onGlobalLayout() {
+                View focusedChild = mRecyclerView.getFocusedChild();
+                if (mWm != null && mWmParams != null && focusedChild != null) {
+                    Rect location = ViewUtils.getViewOnScreenLocation(focusedChild);
                     mWmParams.x = location.left;
                     mWmParams.y = location.top;
                     mWm.updateViewLayout(mOperateView, mWmParams);
@@ -175,12 +169,16 @@ public class OperationManager {
             case OPERATION_TYPE_MOVE:
                 switch (parameter.getMoveDirection()) {
                     case KeyEvent.KEYCODE_DPAD_LEFT:
-                    case KeyEvent.KEYCODE_DPAD_UP:
                         moveToLeftOrUp(KeyEvent.KEYCODE_DPAD_LEFT, currentFocus);
                         break;
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                        moveToLeftOrUp(KeyEvent.KEYCODE_DPAD_UP, currentFocus);
+                        break;
                     case KeyEvent.KEYCODE_DPAD_RIGHT:
-                    case KeyEvent.KEYCODE_DPAD_DOWN:
                         moveToRightOrDown(KeyEvent.KEYCODE_DPAD_RIGHT, currentFocus);
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                        moveToRightOrDown(KeyEvent.KEYCODE_DPAD_DOWN, currentFocus);
                         break;
                 }
                 break;
@@ -192,50 +190,20 @@ public class OperationManager {
         int moveNum = calcMoveNum(moveDir);
         if (mData == null || mData.size() < moveNum || currentFocus + moveNum >= mData.size())
             return;
-        notifyMove(moveDir, currentFocus, currentFocus + moveNum);
+        notifyMove(currentFocus, currentFocus + moveNum);
     }
 
 
     private void moveToLeftOrUp(int moveDir, int currentFocus) {
         int moveNum = calcMoveNum(moveDir);
         if (mData == null || mData.size() < moveNum || currentFocus - moveNum < 0) return;
-        notifyMove(moveDir, currentFocus, currentFocus - moveNum);
+        notifyMove(currentFocus, currentFocus - moveNum);
     }
 
-    private void notifyMove(int moveDir, int currentFocus, int newFocus) {
+    private void notifyMove(int currentFocus, int newFocus) {
         Collections.swap(mData, currentFocus, newFocus);
         mAdapter.notifyItemChanged(currentFocus, "playLoad");
         mAdapter.notifyItemChanged(newFocus, "playLoad");
-        int offset = calcMoveOffset(moveDir, currentFocus, newFocus);
-        updateOperateViewLocation(moveDir, offset);
-    }
-
-    private void updateOperateViewLocation(int moveDir, int offset) {
-        switch (moveDir) {
-            case KeyEvent.KEYCODE_DPAD_LEFT:
-            case KeyEvent.KEYCODE_DPAD_RIGHT:
-                mWmParams.x += offset;
-                break;
-            case KeyEvent.KEYCODE_DPAD_UP:
-            case KeyEvent.KEYCODE_DPAD_DOWN:
-                mWmParams.y += offset;
-                break;
-        }
-        mWm.updateViewLayout(mOperateView, mWmParams);
-    }
-
-    private int calcMoveOffset(int moveDir, int currentFocus, int newFocus) {
-        View newView = mLayoutManager.findViewByPosition(newFocus);
-        View currView = mLayoutManager.findViewByPosition(currentFocus);
-        int offset = 0;
-        if (newView != null && currView != null) {
-            if (moveDir == KeyEvent.KEYCODE_DPAD_LEFT || moveDir == KeyEvent.KEYCODE_DPAD_RIGHT) {
-                offset = (int) (newView.getX() - currView.getX());
-            } else {
-                offset = (int) (newView.getY() - currView.getY());
-            }
-        }
-        return offset;
     }
 
     public int calcMoveNum(int moveDirection) {
