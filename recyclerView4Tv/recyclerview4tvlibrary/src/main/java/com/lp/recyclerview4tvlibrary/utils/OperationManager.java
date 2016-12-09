@@ -26,7 +26,6 @@ import java.util.List;
  * 对条目操作的管理类
  */
 public class OperationManager {
-
     private final LayoutInflater mLayoutInflater;
     private Context mContext;
     /**
@@ -124,6 +123,7 @@ public class OperationManager {
         mWmParams.height = ViewUtils.dpToPx(mContext, mOperateView.getMeasuredHeight());
         mWmParams.format = 1;
         mWm.addView(mOperateView, mWmParams);
+        mHadShow = true;
     }
 
     public void dismissOperateView() {
@@ -202,8 +202,8 @@ public class OperationManager {
 
     private void notifyMove(int currentFocus, int newFocus) {
         Collections.swap(mData, currentFocus, newFocus);
-        mAdapter.notifyItemChanged(currentFocus, "playLoad");
-        mAdapter.notifyItemChanged(newFocus, "playLoad");
+        mAdapter.notifyItemChanged(currentFocus, "payLoad");
+        mAdapter.notifyItemChanged(newFocus, "payLoad");
     }
 
     public int calcMoveNum(int moveDirection) {

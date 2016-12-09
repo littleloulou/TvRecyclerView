@@ -13,7 +13,8 @@ import com.lp.recyclerview4tvlibrary.utils.OperationManager;
 
 /**
  * Created by lph on 2016/12/8.
- *
+ * 可以继承此View实现自己的操作view
+ * 请看下下面关于回调的说明
  */
 public class OperateView extends RelativeLayout implements View.OnClickListener {
     private static final String TAG = "OperateView";
@@ -59,17 +60,41 @@ public class OperateView extends RelativeLayout implements View.OnClickListener 
             setCanFocus(operateUpdate);
             operateUpdate.setOnClickListener(this);
         }
-        View operateMove = findViewById(R.id.operate_move);
-        if (operateMove != null) {
-            setCanFocus(operateMove);
-            operateMove.setOnClickListener(this);
+        View operateMoveLeft = findViewById(R.id.operate_moveLeft);
+        if (operateMoveLeft != null) {
+            setCanFocus(operateMoveLeft);
+            operateMoveLeft.setOnClickListener(this);
+        }
+        View operateMoveRight = findViewById(R.id.operate_moveRight);
+        if (operateMoveRight != null) {
+            setCanFocus(operateMoveRight);
+            operateMoveRight.setOnClickListener(this);
+        }
+        View operateMoveUp = findViewById(R.id.operate_moveUp);
+        if (operateMoveUp != null) {
+            setCanFocus(operateMoveUp);
+            operateMoveUp.setOnClickListener(this);
+        }
+        View operateMoveDown = findViewById(R.id.operate_moveDown);
+        if (operateMoveDown != null) {
+            setCanFocus(operateMoveDown);
+            operateMoveDown.setOnClickListener(this);
         }
     }
+
+    /**
+     * 关于回调：
+     */
 
     //根据自己的需求在合适的地方调用mListener的各个回调,或者只是调用部分回调,
     //这里这样写,适合一般的情况,就是只有一级弹出框,当出现弹出多个层级的弹出操作框时,回调就需要在最后一级的弹出框完成了.
     //并且会伴随着数据的回传.
 
+    /**
+     * 必要的时候重写OperateView,在合适的地方回调mListener的某个方法,客户端的代码根据自己的业务逻辑，进行相应修改
+     * 这里在onClick里面回调适合一般情况,比如一个操作框,上面显示了一些基本操作,当又有新的弹出框时,这种情况将不再适用
+     * 请重写OperateView,在合适的地方回调.
+     */
     @Override
     public void onClick(View view) {
         if (mListener == null) {
@@ -86,8 +111,14 @@ public class OperateView extends RelativeLayout implements View.OnClickListener 
         } else if (id == R.id.operate_update) {
             mManager.dismissOperateView();
             mListener.onItemUpdate(null);
-        } else if (id == R.id.operate_move) {
-            mListener.onItemMove();
+        } else if (id == R.id.operate_moveLeft) {
+            mListener.onItemMove(KeyEvent.KEYCODE_DPAD_LEFT);
+        }else if (id == R.id.operate_moveRight) {
+            mListener.onItemMove(KeyEvent.KEYCODE_DPAD_RIGHT);
+        }else if (id == R.id.operate_moveUp) {
+            mListener.onItemMove(KeyEvent.KEYCODE_DPAD_UP);
+        }else if (id == R.id.operate_moveDown) {
+            mListener.onItemMove(KeyEvent.KEYCODE_DPAD_DOWN);
         }
     }
 
@@ -98,7 +129,7 @@ public class OperateView extends RelativeLayout implements View.OnClickListener 
 
     /**
      * 操作监听,每个方法的参数有时候是不需要的,有的时候很有必要,当出现多级菜单时,比如是一个列表,用户选择了要替换
-     * 的数据,就需要将该数据回传到调用者,去拿到当前选择的数据去更新已有数据
+     * 的数据,就需要将该数据回传到调用者,去拿到当前选择的数据去更新已有数据.
      */
     public interface OnOperatingListener {
         void onItemAdd(Object newData);
@@ -107,7 +138,7 @@ public class OperateView extends RelativeLayout implements View.OnClickListener 
 
         void onItemUpdate(Object update);
 
-        void onItemMove();
+        void onItemMove(Object direction);
     }
 
     public void setCanFocus(View view) {

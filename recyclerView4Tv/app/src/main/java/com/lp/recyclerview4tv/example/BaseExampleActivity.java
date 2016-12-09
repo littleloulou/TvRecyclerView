@@ -266,15 +266,15 @@ public abstract class BaseExampleActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onItemMove() {
+            public void onItemMove(Object direction) {
                 mParameter.setOperateType(OperationManager.OPERATION_TYPE_MOVE);
                 mParameter.setCurrentOperatePosition(mCurrentFocus);
-                mParameter.setMoveDirection(KeyEvent.KEYCODE_DPAD_UP);
+                mParameter.setMoveDirection(Integer.parseInt(direction.toString()));
                 mManager.operateItem(mParameter);
             }
         });
         Rect onScreenLocation = ViewUtils.getViewOnScreenLocation(mCrurrentItemView);
-        //当x==y==0时,操作框显示在屏幕中央
+        //当x==y==0时,操作框显示在屏幕中央,否则会根据客户端传入的位置确定操作框的位置
         mManager.showOperateViewAt(onScreenLocation.left, onScreenLocation.top);
     }
 

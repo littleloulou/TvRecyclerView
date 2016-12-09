@@ -47,13 +47,40 @@
                 android:text="update"
                 />
             <Button
-                android:id="@+id/operate_move"
+                android:id="@+id/operate_moveLeft"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/menu_btn_bg"
                 android:layout_margin="3dp"
                 android:textSize="18sp"
-                android:text="move_item"
+                android:text="move_item_left"
+                />
+            <Button
+                android:id="@+id/operate_moveRight"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/menu_btn_bg"
+                android:layout_margin="3dp"
+                android:textSize="18sp"
+                android:text="move_item_right"
+                />
+            <Button
+                android:id="@+id/operate_moveUp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/menu_btn_bg"
+                android:layout_margin="3dp"
+                android:textSize="18sp"
+                android:text="move_item_up"
+                />
+            <Button
+                android:id="@+id/operate_moveDown"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/menu_btn_bg"
+                android:layout_margin="3dp"
+                android:textSize="18sp"
+                android:text="move_item_down"
                 />
         </LinearLayout>
     </ScrollView>
