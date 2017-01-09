@@ -1,11 +1,14 @@
 package com.lp.recyclerview4tvlibrary.effect;
 
 import android.animation.AnimatorSet;
+import android.animation.IntEvaluator;
 import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
@@ -14,7 +17,6 @@ import com.lp.recyclerview4tvlibrary.view.FocusFrameView;
 
 /**
  * Created by lph on 2016/11/2.
- *
  */
 public abstract class BaseEffect {
     public FocusFrameView mFocusFrameView;
@@ -23,6 +25,8 @@ public abstract class BaseEffect {
     protected AnimatorSet mAnimatorSet;
     protected Drawable mFocusDrawable;
     private Context mContext;
+    protected IntEvaluator mEvaluator = new IntEvaluator();
+
 
     /**
      * 拿到焦点框引用
@@ -56,6 +60,11 @@ public abstract class BaseEffect {
         this.mFocusFramePadding = framePadding;
     }
 
+    protected int mNewWidth = 0;
+    protected int mNewHeight = 0;
+    protected int mOldWidth = 0;
+    protected int mOldHeight = 0;
+
     /**
      * 执行焦点移动动画效果
      *
@@ -64,45 +73,43 @@ public abstract class BaseEffect {
      * @param scaleX    x轴的缩放
      * @param scaleY    y轴的缩放
      */
-    protected void runFocusMoveAnimation(View focusView, View moveView, float scaleX, float scaleY) {
+    protected void runFocusMoveAnimation(View focusView, final View moveView, float scaleX, float scaleY) {
         if (mAnimatorSet != null && mAnimatorSet.isRunning()) {
             return;
         }
-        int newWidth = 0;
-        int newHeight = 0;
-        int oldWidth = 0;
-        int oldHeight = 0;
-
         int newX = 0;
         int newY = 0;
-
-
         if (focusView != null) {
-            newWidth = (int) (focusView.getMeasuredWidth() * scaleX);
-            newHeight = (int) (focusView.getMeasuredHeight() * scaleY);
-            oldWidth = moveView.getMeasuredWidth();
-            oldHeight = moveView.getMeasuredHeight();
+            mNewWidth = (int) (focusView.getMeasuredWidth() * scaleX);
+            mNewHeight = (int) (focusView.getMeasuredHeight() * scaleY);
+            mOldWidth = moveView.getMeasuredWidth();
+            mOldHeight = moveView.getMeasuredHeight();
             Rect fromRect = findLocationWithView(moveView);
             Rect toRect = findLocationWithView(focusView);
             int x = toRect.left - fromRect.left;
             int y = toRect.top - fromRect.top;
-            newX = x - Math.abs(focusView.getMeasuredWidth() - newWidth) / 2;
-            newY = y - Math.abs(focusView.getMeasuredHeight() - newHeight) / 2;
+            newX = x - Math.abs(focusView.getMeasuredWidth() - mNewWidth) / 2;
+            newY = y - Math.abs(focusView.getMeasuredHeight() - mNewHeight) / 2;
         }
 
         mAnimatorSet = new AnimatorSet();
         final ObjectAnimator transAnimatorX = ObjectAnimator.ofFloat(moveView, "translationX", newX);
         ObjectAnimator transAnimatorY = ObjectAnimator.ofFloat(moveView, "translationY", newY);
-
-        ObjectAnimator scaleXAnimator = ObjectAnimator.ofInt(moveView, "width", oldWidth,
-                newWidth);
-        ObjectAnimator scaleYAnimator = ObjectAnimator.ofInt(moveView, "height", oldHeight,
-                newHeight);
+        transAnimatorX.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator valueAnimator) {
+                ViewGroup.LayoutParams lp = moveView.getLayoutParams();
+                lp.width = mEvaluator.evaluate(valueAnimator.getAnimatedFraction(), mOldWidth, mNewWidth);
+                lp.height = mEvaluator.evaluate(valueAnimator.getAnimatedFraction(), mOldHeight, mNewHeight);
+                moveView.setLayoutParams(lp);
+                moveView.requestLayout();
+            }
+        });
         //获取焦点的view
         ObjectAnimator scaleFocusViewX = ObjectAnimator.ofFloat(focusView, "scaleX", scaleX);
         ObjectAnimator scaleFocusViewY = ObjectAnimator.ofFloat(focusView, "scaleY", scaleY);
 
-        mAnimatorSet.playTogether(transAnimatorX, transAnimatorY, scaleXAnimator, scaleYAnimator,scaleFocusViewX,scaleFocusViewY);
+        mAnimatorSet.playTogether(transAnimatorX, transAnimatorY, scaleFocusViewX, scaleFocusViewY);
         mAnimatorSet.setInterpolator(new DecelerateInterpolator(1));
         mAnimatorSet.setDuration(mDuration);
         mAnimatorSet.start();

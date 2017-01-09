@@ -10,8 +10,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
+import android.view.FocusFinder;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.ImageView;
 
 import com.lp.recyclerview4tvlibrary.effect.RecyclerViewEffect;
 import com.lp.recyclerview4tvlibrary.utils.ViewUtils;
@@ -19,7 +21,7 @@ import com.lp.recyclerview4tvlibrary.utils.ViewUtils;
 
 /**
  * Created by lph on 2016/10/20.
- * instanceOf RecyclerView for Tv
+ * a descendant of RecyclerView for Tv
  */
 public class TvRecyclerView extends RecyclerView {
 
@@ -347,8 +349,15 @@ public class TvRecyclerView extends RecyclerView {
             boolean result = mOnItemListener.onReviseFocusFollow(this, getFocusedChild(), getChildLayoutPosition(getFocusedChild()));
             if (!result) {
                 mRecyclerViewEffect.setFocusView(getFocusedChild(), mScale);
+                System.out.println("onScrollStateChanged");
             }
         }
+    }
+
+    @Override
+    public void onScrolled(int dx, int dy) {
+        super.onScrolled(dx, dy);
+        System.out.println("onScrolled:----->" + "dx:" + dx + "," + "dy:" + dy);
     }
 
     private int mOffset;
@@ -556,5 +565,11 @@ public class TvRecyclerView extends RecyclerView {
 
     public void setItemScale(float scale) {
         this.mScale = scale;
+    }
+
+
+    @Override
+    public View focusSearch(View focused, int direction) {
+        return super.focusSearch(focused, direction);
     }
 }

@@ -18,7 +18,7 @@ public class GridLayoutActivity extends BaseExampleActivity {
         if ("0".equals(mIsVertical)) {
             return new GridLayoutManager(this, 2, GridLayoutManager.HORIZONTAL, false);
         } else {
-            return new GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false);
+            return new GridLayoutManager(this, 5, GridLayoutManager.VERTICAL, false);
         }
     }
 
